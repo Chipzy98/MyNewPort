@@ -3,7 +3,7 @@ export const personalInfo = {
   title: "UI/UX Designer & Frontend Developer",
   email: "vimukthit19@gmail.com",
   phone: ["0766545411", "0784545411"],
-  website: "tharaka368.com",
+  website: "chipzy368.com",
   github: "github.com/Chipzy98",
   bio: "Passionate UI/UX Designer & Frontend Developer based in Colombo, Sri Lanka. Winner of Best Software Solution at Industry Minds Competition 2024.",
   stats: [

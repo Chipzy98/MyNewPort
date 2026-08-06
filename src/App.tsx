@@ -718,6 +718,52 @@ export default function App() {
     backend: "linear-gradient(90deg,#A78BFA,#00E5FF)",
   };
 
+  // ── Send Message Function ──
+  const sendMessage = () => {
+    const nameInput = document.querySelector('input[placeholder="Your Name"]') as HTMLInputElement;
+    const emailInput = document.querySelector('input[placeholder="Your Email"]') as HTMLInputElement;
+    const subjectInput = document.querySelector('input[placeholder="Subject"]') as HTMLInputElement;
+    const messageInput = document.querySelector('textarea[placeholder="Your Message"]') as HTMLTextAreaElement;
+
+    const name = nameInput?.value || '';
+    const email = emailInput?.value || '';
+    const subject = subjectInput?.value || 'Portfolio Contact';
+    const message = messageInput?.value || '';
+
+    // Validate required fields
+    if (!name || !email || !message) {
+      alert('Please fill in Name, Email, and Message fields.');
+      return;
+    }
+
+    // Send via FormSubmit.co
+    fetch('https://formsubmit.co/ajax/vimukthit19@gmail.com', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        subject: subject,
+        message: message
+      })
+    })
+    .then(response => response.json())
+    .then(() => {
+      alert('✅ Message sent successfully! I\'ll get back to you soon.');
+      // Clear form
+      if (nameInput) nameInput.value = '';
+      if (emailInput) emailInput.value = '';
+      if (subjectInput) subjectInput.value = '';
+      if (messageInput) messageInput.value = '';
+    })
+    .catch(() => {
+      alert('❌ Failed to send message. Please try again or email me directly at vimukthit19@gmail.com');
+    });
+  };
+
   return (
     <div
       style={{
@@ -1613,20 +1659,20 @@ export default function App() {
                 "📧",
                 "Email",
                 personalInfo.email,
-                `mailto:${personalInfo.email}`,
+                `vimukthit19@gmail.com`,
               ],
               ["📱", "Phone", "+94 766 545 411", "tel:+94766545411"],
               [
                 "🌐",
                 "Website",
                 personalInfo.website,
-                `https://${personalInfo.website}`,
+                `https://chipzy368r.netlify.app/`,
               ],
               [
                 "🐱",
                 "GitHub",
                 personalInfo.github,
-                `https://${personalInfo.github}`,
+                `https://github.com/Chipzy98`,
               ],
             ].map(([icon, label, val, href]) => (
               <div
@@ -1743,6 +1789,7 @@ export default function App() {
               }
             />
             <button
+              onClick={sendMessage}
               style={{
                 width: "100%",
                 background: "linear-gradient(135deg,#6C63FF,#00E5FF)",
