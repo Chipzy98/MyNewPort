@@ -11,3 +11,10 @@ declare module "*.png" {
   const src: string;
   export default src;
 }
+// R3F Three.js JSX elements
+/// <reference types="@react-three/fiber" />
+
+declare module "*.css" {
+  const content: Record<string, string>;
+  export default content;
+}

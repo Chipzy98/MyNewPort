@@ -9,6 +9,7 @@ import {
 } from "./data/portfolio";
 
 import profileImg from "./assets/Proimg1.jpeg";
+import Scene3D from "./Scene3D";
 
 // ── Custom cursor ──────────────────────────────────────────────
 function Cursor() {
@@ -1047,7 +1048,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* Avatar side */}
+          {/* 3D Scene side */}
           <div
             style={{
               flexShrink: 0,
@@ -1055,44 +1056,9 @@ export default function App() {
               flexDirection: "column",
               alignItems: "center",
               gap: 20,
-              animation: "float 5s ease-in-out infinite",
             }}
           >
-            <div
-              style={{
-                width: 210,
-                height: 210,
-                borderRadius: "50%",
-                background: "linear-gradient(135deg,#6C63FF,#00E5FF,#6C63FF)",
-                padding: 3,
-                animation: "pulse 3s ease-in-out infinite",
-                boxShadow: "0 0 60px rgba(108,99,255,0.4)",
-              }}
-            >
-              <div
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  borderRadius: "50%",
-                  background: "#0B0620",
-                  overflow: "hidden",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <img
-  src={profileImg}
-  alt="Tharaka Vimukthi Bandara"
-  style={{
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    borderRadius: "50%",
-  }}
-/>
-              </div>
-            </div>
+            <Scene3D profileImg={profileImg} />
             <div
               style={{
                 display: "flex",
@@ -1104,7 +1070,7 @@ export default function App() {
               {[
                 ["Figma", "#6C63FF"],
                 ["Adobe XD", "#00E5FF"],
-                ["React", "#6C63FF"],
+                ["React / Next.js", "#6C63FF"],
               ].map(([t, c], i) => (
                 <div
                   key={t}
