@@ -11,11 +11,27 @@ import {
 import profileImg from "./assets/Proimg1.jpeg";
 import Scene3D from "./Scene3D";
 
-// ── Custom cursor ──────────────────────────────────────────────
+// ── Responsive hook ─────────────────────────────────────────────
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== "undefined" ? window.innerWidth <= breakpoint : false,
+  );
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= breakpoint);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, [breakpoint]);
+  return isMobile;
+}
+
+// ── Custom cursor (desktop only) ────────────────────────────────
 function Cursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
   useEffect(() => {
+    if (isMobile) return;
     const move = (e: MouseEvent) => {
       if (cursorRef.current) {
         cursorRef.current.style.left = e.clientX + "px";
@@ -28,7 +44,10 @@ function Cursor() {
     };
     window.addEventListener("mousemove", move);
     return () => window.removeEventListener("mousemove", move);
-  }, []);
+  }, [isMobile]);
+
+  if (isMobile) return null;
+
   return (
     <>
       <div
@@ -171,11 +190,12 @@ function Section({
   children: React.ReactNode;
   dark?: boolean;
 }) {
+  const isMobile = useIsMobile();
   return (
     <section
       id={id}
       style={{
-        padding: "100px 48px",
+        padding: isMobile ? "64px 20px" : "100px 48px",
         background: dark
           ? "linear-gradient(160deg,#0A0518,#080820)"
           : "transparent",
@@ -224,6 +244,7 @@ function ProjectCard({
   onClick: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
+  const isMobile = useIsMobile();
   return (
     <div
       onClick={onClick}
@@ -233,10 +254,10 @@ function ProjectCard({
         background: hovered ? `${project.color}08` : "rgba(17,24,39,0.6)",
         border: `1px solid ${hovered ? project.color + "44" : "rgba(108,99,255,0.1)"}`,
         borderRadius: 16,
-        padding: 28,
-        cursor: "pointer",
+        padding: isMobile ? 20 : 28,
+        cursor: isMobile ? "pointer" : "none",
         transition: "all 0.3s",
-        transform: hovered ? "translateY(-6px)" : "none",
+        transform: hovered && !isMobile ? "translateY(-6px)" : "none",
         backdropFilter: "blur(10px)",
       }}
     >
@@ -246,6 +267,8 @@ function ProjectCard({
           justifyContent: "space-between",
           alignItems: "flex-start",
           marginBottom: 16,
+          flexWrap: "wrap",
+          gap: 10,
         }}
       >
         <div
@@ -362,7 +385,7 @@ function ProjectCard({
           {project.award}
         </div>
       )}
-      {hovered && (
+      {hovered && !isMobile && (
         <div
           style={{
             marginTop: 14,
@@ -386,6 +409,7 @@ function ProjectModal({
   project: (typeof projects)[0];
   onClose: () => void;
 }) {
+  const isMobile = useIsMobile();
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => {
@@ -401,7 +425,7 @@ function ProjectModal({
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        padding: 24,
+        padding: isMobile ? 12 : 24,
       }}
       onClick={onClose}
     >
@@ -422,8 +446,8 @@ function ProjectModal({
           overflowY: "auto",
           background: `linear-gradient(135deg,#0D0D1A,#111827)`,
           border: `1px solid ${project.color}33`,
-          borderRadius: 24,
-          padding: 40,
+          borderRadius: isMobile ? 16 : 24,
+          padding: isMobile ? 20 : 40,
         }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -431,27 +455,27 @@ function ProjectModal({
           onClick={onClose}
           style={{
             position: "absolute",
-            top: 20,
-            right: 20,
+            top: isMobile ? 14 : 20,
+            right: isMobile ? 14 : 20,
             background: "none",
             border: "1px solid #334155",
             color: "#94A3B8",
             borderRadius: 8,
             padding: "6px 14px",
-            cursor: "pointer",
+            cursor: isMobile ? "pointer" : "none",
             fontFamily: "inherit",
             fontSize: 13,
           }}
         >
           ✕ Close
         </button>
-        <div style={{ fontSize: 48, marginBottom: 16 }}>
+        <div style={{ fontSize: isMobile ? 36 : 48, marginBottom: 16 }}>
           {project.category.includes("UI/UX") ||
           project.category.includes("Mobile")
             ? "🎨"
             : "💻"}
         </div>
-        <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+        <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
           <span
             style={{
               fontSize: 12,
@@ -481,10 +505,11 @@ function ProjectModal({
         <h2
           style={{
             fontFamily: "'Space Grotesk',sans-serif",
-            fontSize: 36,
+            fontSize: isMobile ? 26 : 36,
             fontWeight: 700,
             color: "#F1F5F9",
             marginBottom: 8,
+            lineHeight: 1.15,
           }}
         >
           {project.title}
@@ -514,8 +539,8 @@ function ProjectModal({
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "2fr 1fr",
-            gap: 24,
+            gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr",
+            gap: isMobile ? 16 : 24,
             marginBottom: 28,
           }}
         >
@@ -524,7 +549,7 @@ function ProjectModal({
               background: "rgba(255,255,255,0.02)",
               border: "1px solid #1E293B",
               borderRadius: 16,
-              padding: 24,
+              padding: isMobile ? 18 : 24,
             }}
           >
             <h3
@@ -612,7 +637,7 @@ function ProjectModal({
             background: "rgba(255,255,255,0.02)",
             border: "1px solid #1E293B",
             borderRadius: 16,
-            padding: 24,
+            padding: isMobile ? 18 : 24,
             marginBottom: 24,
           }}
         >
@@ -687,6 +712,7 @@ function ProjectModal({
 }
 
 export default function App() {
+  const isMobile = useIsMobile();
   const [activeNav, setActiveNav] = useState("Home");
   const [activeFilter, setActiveFilter] = useState("All");
   const [selectedProject, setSelectedProject] = useState<
@@ -696,6 +722,7 @@ export default function App() {
     "design" | "frontend" | "backend"
   >("design");
   const [heroVisible, setHeroVisible] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     setTimeout(() => setHeroVisible(true), 100);
@@ -703,6 +730,7 @@ export default function App() {
 
   const scrollTo = (id: string) => {
     setActiveNav(id);
+    setMobileMenuOpen(false);
     document
       .getElementById(id.toLowerCase())
       ?.scrollIntoView({ behavior: "smooth" });
@@ -718,6 +746,8 @@ export default function App() {
     frontend: "linear-gradient(90deg,#00E5FF,#6C63FF)",
     backend: "linear-gradient(90deg,#A78BFA,#00E5FF)",
   };
+
+  const cursorStyle = isMobile ? "pointer" : "none";
 
   // ── Send Message Function ──
   const sendMessage = () => {
@@ -784,10 +814,17 @@ export default function App() {
         @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
         @keyframes rotate { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
         @keyframes slideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
-        body { cursor:none !important; }
-        a,button { cursor:none !important; }
         * { box-sizing:border-box; }
+        html { -webkit-text-size-adjust:100%; }
         ::-webkit-scrollbar{width:4px} ::-webkit-scrollbar-track{background:#050816} ::-webkit-scrollbar-thumb{background:linear-gradient(#6C63FF,#00E5FF);border-radius:2px}
+        @media (hover: hover) and (pointer: fine) {
+          body { cursor:none !important; }
+          a,button { cursor:none !important; }
+        }
+        @media (max-width: 768px) {
+          .hero-stats { justify-content:center; }
+          .hero-content { text-align:center; align-items:center; }
+        }
       `}</style>
 
       {/* ── NAV ── */}
@@ -804,7 +841,7 @@ export default function App() {
           height: 68,
           display: "flex",
           alignItems: "center",
-          padding: "0 48px",
+          padding: isMobile ? "0 20px" : "0 48px",
           justifyContent: "space-between",
         }}
       >
@@ -819,18 +856,91 @@ export default function App() {
           <span style={{ color: "#6C63FF" }}>T</span>haraka
           <span style={{ color: "#00E5FF" }}>.</span>
         </span>
-        <div style={{ display: "flex", gap: 32, alignItems: "center" }}>
+
+        {!isMobile && (
+          <div style={{ display: "flex", gap: 32, alignItems: "center" }}>
+            {["Home", "About", "Skills", "Projects", "Contact"].map((l) => (
+              <span
+                key={l}
+                onClick={() => scrollTo(l)}
+                style={{
+                  cursor: "none",
+                  fontSize: 14,
+                  fontWeight: 500,
+                  color: activeNav === l ? "#00E5FF" : "#94A3B8",
+                  transition: "color 0.2s",
+                  letterSpacing: "0.02em",
+                }}
+              >
+                {l}
+              </span>
+            ))}
+            <button
+              onClick={() => scrollTo("Contact")}
+              style={{
+                background: "linear-gradient(135deg,#6C63FF,#00E5FF)",
+                color: "#fff",
+                border: "none",
+                borderRadius: 10,
+                padding: "9px 22px",
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: "none",
+                fontFamily: "inherit",
+              }}
+            >
+              Hire Me
+            </button>
+          </div>
+        )}
+
+        {isMobile && (
+          <button
+            onClick={() => setMobileMenuOpen((o) => !o)}
+            aria-label="Toggle menu"
+            style={{
+              background: "transparent",
+              border: "1px solid rgba(108,99,255,0.3)",
+              color: "#E2E8F0",
+              borderRadius: 8,
+              width: 40,
+              height: 40,
+              fontSize: 16,
+              cursor: "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            {mobileMenuOpen ? "✕" : "☰"}
+          </button>
+        )}
+      </nav>
+
+      {isMobile && mobileMenuOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 68,
+            left: 0,
+            right: 0,
+            zIndex: 99,
+            background: "rgba(5,8,22,0.98)",
+            backdropFilter: "blur(20px)",
+            borderBottom: "1px solid rgba(108,99,255,0.15)",
+            display: "flex",
+            flexDirection: "column",
+            padding: "8px 20px 20px",
+          }}
+        >
           {["Home", "About", "Skills", "Projects", "Contact"].map((l) => (
             <span
               key={l}
               onClick={() => scrollTo(l)}
               style={{
-                cursor: "none",
-                fontSize: 14,
+                padding: "14px 4px",
+                fontSize: 15,
                 fontWeight: 500,
-                color: activeNav === l ? "#00E5FF" : "#94A3B8",
-                transition: "color 0.2s",
-                letterSpacing: "0.02em",
+                color: activeNav === l ? "#00E5FF" : "#CBD5E1",
+                borderBottom: "1px solid rgba(108,99,255,0.08)",
               }}
             >
               {l}
@@ -839,21 +949,21 @@ export default function App() {
           <button
             onClick={() => scrollTo("Contact")}
             style={{
+              marginTop: 16,
               background: "linear-gradient(135deg,#6C63FF,#00E5FF)",
               color: "#fff",
               border: "none",
               borderRadius: 10,
-              padding: "9px 22px",
-              fontSize: 13,
+              padding: "12px 22px",
+              fontSize: 14,
               fontWeight: 600,
-              cursor: "none",
               fontFamily: "inherit",
             }}
           >
             Hire Me
           </button>
         </div>
-      </nav>
+      )}
 
       {/* ── HERO ── */}
       <section
@@ -862,7 +972,7 @@ export default function App() {
           minHeight: "100vh",
           display: "flex",
           alignItems: "center",
-          padding: "120px 48px 80px",
+          padding: isMobile ? "100px 20px 60px" : "120px 48px 80px",
           position: "relative",
           overflow: "hidden",
           background: "linear-gradient(160deg,#050816 0%,#0B0620 100%)",
@@ -910,8 +1020,9 @@ export default function App() {
         <div
           style={{
             display: "flex",
+            flexDirection: isMobile ? "column" : "row",
             alignItems: "center",
-            gap: 80,
+            gap: isMobile ? 40 : 80,
             width: "100%",
             maxWidth: 1100,
             margin: "0 auto",
@@ -920,10 +1031,19 @@ export default function App() {
             transition: "all 0.9s cubic-bezier(.4,0,.2,1)",
           }}
         >
-          <div style={{ flex: 1 }}>
+          <div
+            className="hero-content"
+            style={{
+              flex: 1,
+              textAlign: isMobile ? "center" : "left",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: isMobile ? "center" : "flex-start",
+            }}
+          >
             <span
               style={{
-                fontSize: 20,
+                fontSize: isMobile ? 14 : 20,
                 letterSpacing: "0.18em",
                 color: "#6C63FF",
                 fontWeight: 700,
@@ -937,7 +1057,7 @@ export default function App() {
             <h1
               style={{
                 fontFamily: "'Space Grotesk',sans-serif",
-                fontSize: 58,
+                fontSize: isMobile ? 38 : 58,
                 fontWeight: 700,
                 lineHeight: 1.06,
                 letterSpacing: "-0.03em",
@@ -952,7 +1072,7 @@ export default function App() {
             </h1>
             <p
               style={{
-                fontSize: 16,
+                fontSize: 15,
                 color: "#64748B",
                 lineHeight: 1.78,
                 maxWidth: 440,
@@ -962,7 +1082,15 @@ export default function App() {
               Crafting intuitive digital experiences through thoughtful UI/UX
               design and clean frontend code. Based in Colombo, Sri Lanka.
             </p>
-            <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+            <div
+              style={{
+                display: "flex",
+                gap: 14,
+                flexWrap: "wrap",
+                justifyContent: isMobile ? "center" : "flex-start",
+                width: isMobile ? "100%" : "auto",
+              }}
+            >
               <button
                 onClick={() => scrollTo("Projects")}
                 style={{
@@ -973,9 +1101,10 @@ export default function App() {
                   padding: "14px 30px",
                   fontSize: 14,
                   fontWeight: 700,
-                  cursor: "none",
+                  cursor: cursorStyle,
                   fontFamily: "inherit",
                   boxShadow: "0 8px 24px rgba(108,99,255,0.35)",
+                  flex: isMobile ? "1 1 140px" : "none",
                 }}
               >
                 View Projects
@@ -990,19 +1119,22 @@ export default function App() {
                   padding: "14px 30px",
                   fontSize: 14,
                   fontWeight: 700,
-                  cursor: "none",
+                  cursor: cursorStyle,
                   fontFamily: "inherit",
+                  flex: isMobile ? "1 1 140px" : "none",
                 }}
               >
                 Get In Touch
               </button>
             </div>
             <div
+              className="hero-stats"
               style={{
                 display: "flex",
-                gap: 24,
+                gap: isMobile ? 12 : 24,
                 marginTop: 52,
                 flexWrap: "wrap",
+                justifyContent: isMobile ? "center" : "flex-start",
               }}
             >
               {personalInfo.stats.map((s) => (
@@ -1012,7 +1144,7 @@ export default function App() {
                     background: "rgba(17,24,39,0.6)",
                     border: "1px solid rgba(108,99,255,0.1)",
                     borderRadius: 12,
-                    padding: "18px 24px",
+                    padding: isMobile ? "14px 18px" : "18px 24px",
                     backdropFilter: "blur(10px)",
                     minWidth: 90,
                   }}
@@ -1020,7 +1152,7 @@ export default function App() {
                   <div
                     style={{
                       fontFamily: "'Space Grotesk',sans-serif",
-                      fontSize: 32,
+                      fontSize: isMobile ? 26 : 32,
                       fontWeight: 700,
                       background: "linear-gradient(135deg,#6C63FF,#00E5FF)",
                       WebkitBackgroundClip: "text",
@@ -1056,6 +1188,8 @@ export default function App() {
               flexDirection: "column",
               alignItems: "center",
               gap: 20,
+              maxWidth: isMobile ? "100%" : "none",
+              transform: isMobile ? "scale(0.82)" : "none",
             }}
           >
             <Scene3D profileImg={profileImg} />
@@ -1113,13 +1247,17 @@ export default function App() {
       <Section id="about" dark>
         <SectionLabel label="About Me" />
         <div
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 52 }}
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: isMobile ? 32 : 52,
+          }}
         >
           <div>
             <h2
               style={{
                 fontFamily: "'Space Grotesk',sans-serif",
-                fontSize: 38,
+                fontSize: isMobile ? 28 : 38,
                 fontWeight: 700,
                 letterSpacing: "-0.02em",
                 color: "#F1F5F9",
@@ -1231,7 +1369,7 @@ export default function App() {
         <h2
           style={{
             fontFamily: "'Space Grotesk',sans-serif",
-            fontSize: 36,
+            fontSize: isMobile ? 28 : 36,
             fontWeight: 700,
             color: "#F1F5F9",
             marginBottom: 40,
@@ -1239,7 +1377,14 @@ export default function App() {
         >
           What I Work With
         </h2>
-        <div style={{ display: "flex", gap: 12, marginBottom: 36 }}>
+        <div
+          style={{
+            display: "flex",
+            gap: 12,
+            marginBottom: 36,
+            flexWrap: "wrap",
+          }}
+        >
           {(["design", "frontend", "backend"] as const).map((tab) => (
             <button
               key={tab}
@@ -1254,7 +1399,7 @@ export default function App() {
                 borderRadius: 8,
                 padding: "9px 20px",
                 fontSize: 13,
-                cursor: "none",
+                cursor: cursorStyle,
                 fontFamily: "inherit",
                 fontWeight: 600,
                 textTransform: "capitalize",
@@ -1267,7 +1412,7 @@ export default function App() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "1fr 1fr",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
             gap: 24,
             marginBottom: 60,
           }}
@@ -1332,7 +1477,7 @@ export default function App() {
         <h2
           style={{
             fontFamily: "'Space Grotesk',sans-serif",
-            fontSize: 36,
+            fontSize: isMobile ? 28 : 36,
             fontWeight: 700,
             color: "#F1F5F9",
             marginBottom: 40,
@@ -1348,7 +1493,7 @@ export default function App() {
                 background: "rgba(17,24,39,0.5)",
                 border: `1px solid ${exp.color}22`,
                 borderRadius: 16,
-                padding: "28px 32px",
+                padding: isMobile ? "22px 20px" : "28px 32px",
                 backdropFilter: "blur(10px)",
                 borderLeft: `3px solid ${exp.color}`,
               }}
@@ -1356,8 +1501,10 @@ export default function App() {
               <div
                 style={{
                   display: "flex",
+                  flexDirection: isMobile ? "column" : "row",
                   justifyContent: "space-between",
                   alignItems: "flex-start",
+                  gap: isMobile ? 10 : 0,
                   marginBottom: 12,
                 }}
               >
@@ -1365,7 +1512,7 @@ export default function App() {
                   <h3
                     style={{
                       fontFamily: "'Space Grotesk',sans-serif",
-                      fontSize: 20,
+                      fontSize: isMobile ? 17 : 20,
                       fontWeight: 700,
                       color: "#F1F5F9",
                       marginBottom: 4,
@@ -1401,6 +1548,7 @@ export default function App() {
                   flexDirection: "column",
                   gap: 8,
                   marginTop: 16,
+                  padding: 0,
                 }}
               >
                 {exp.description.map((d, j) => (
@@ -1440,7 +1588,7 @@ export default function App() {
         <h2
           style={{
             fontFamily: "'Space Grotesk',sans-serif",
-            fontSize: 36,
+            fontSize: isMobile ? 28 : 36,
             fontWeight: 700,
             color: "#F1F5F9",
             marginBottom: 8,
@@ -1449,7 +1597,7 @@ export default function App() {
           Selected Work
         </h2>
         <p style={{ fontSize: 15, color: "#64748B", marginBottom: 36 }}>
-          Click any project to explore details
+          {isMobile ? "Tap any project to explore details" : "Click any project to explore details"}
         </p>
         <div
           style={{
@@ -1457,6 +1605,7 @@ export default function App() {
             gap: 10,
             flexWrap: "wrap",
             marginBottom: 36,
+            overflowX: isMobile ? "auto" : "visible",
           }}
         >
           {["All", "UI/UX Design", "Full Stack", "Mobile UI/UX"].map((f) => (
@@ -1473,9 +1622,11 @@ export default function App() {
                 borderRadius: 8,
                 padding: "8px 18px",
                 fontSize: 13,
-                cursor: "none",
+                cursor: cursorStyle,
                 fontFamily: "inherit",
                 fontWeight: 500,
+                whiteSpace: "nowrap",
+                flexShrink: 0,
               }}
             >
               {f}
@@ -1483,7 +1634,11 @@ export default function App() {
           ))}
         </div>
         <div
-          style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}
+          style={{
+            display: "grid",
+            gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
+            gap: 20,
+          }}
         >
           {filtered.map((p) => (
             <ProjectCard
@@ -1501,7 +1656,7 @@ export default function App() {
         <h2
           style={{
             fontFamily: "'Space Grotesk',sans-serif",
-            fontSize: 36,
+            fontSize: isMobile ? 28 : 36,
             fontWeight: 700,
             color: "#F1F5F9",
             marginBottom: 40,
@@ -1526,7 +1681,7 @@ export default function App() {
               display: "flex",
               flexDirection: "column",
               gap: 28,
-              paddingLeft: 52,
+              paddingLeft: isMobile ? 40 : 52,
             }}
           >
             {education.map((ed, i) => (
@@ -1534,7 +1689,7 @@ export default function App() {
                 <div
                   style={{
                     position: "absolute",
-                    left: -42,
+                    left: isMobile ? -32 : -42,
                     top: 8,
                     width: 16,
                     height: 16,
@@ -1549,15 +1704,17 @@ export default function App() {
                     background: "rgba(17,24,39,0.5)",
                     border: `1px solid ${ed.color}22`,
                     borderRadius: 14,
-                    padding: "20px 24px",
+                    padding: isMobile ? "16px 18px" : "20px 24px",
                     backdropFilter: "blur(10px)",
                   }}
                 >
                   <div
                     style={{
                       display: "flex",
+                      flexDirection: isMobile ? "column" : "row",
                       justifyContent: "space-between",
                       alignItems: "flex-start",
+                      gap: isMobile ? 6 : 0,
                     }}
                   >
                     <div>
@@ -1580,7 +1737,7 @@ export default function App() {
                         fontSize: 11,
                         color: "#475569",
                         whiteSpace: "nowrap",
-                        marginLeft: 16,
+                        marginLeft: isMobile ? 0 : 16,
                       }}
                     >
                       {ed.period}
@@ -1599,7 +1756,7 @@ export default function App() {
         <h2
           style={{
             fontFamily: "'Space Grotesk',sans-serif",
-            fontSize: 36,
+            fontSize: isMobile ? 28 : 36,
             fontWeight: 700,
             color: "#F1F5F9",
             marginBottom: 8,
@@ -1618,8 +1775,15 @@ export default function App() {
           Open to freelance UI/UX design projects and full-time opportunities.
           Let's create something amazing together.
         </p>
-        <div style={{ display: "flex", gap: 48, alignItems: "flex-start" }}>
-          <div style={{ flex: 1 }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? 28 : 48,
+            alignItems: "flex-start",
+          }}
+        >
+          <div style={{ flex: 1, width: "100%" }}>
             {[
               [
                 "📧",
@@ -1678,6 +1842,7 @@ export default function App() {
                       color: "#6C63FF",
                       textDecoration: "none",
                       fontWeight: 500,
+                      wordBreak: "break-word",
                     }}
                   >
                     {val}
@@ -1689,10 +1854,11 @@ export default function App() {
           <div
             style={{
               flex: 1,
+              width: "100%",
               background: "rgba(17,24,39,0.5)",
               border: "1px solid rgba(108,99,255,0.1)",
               borderRadius: 16,
-              padding: 32,
+              padding: isMobile ? 22 : 32,
               backdropFilter: "blur(10px)",
             }}
           >
@@ -1719,7 +1885,7 @@ export default function App() {
                   borderRadius: 10,
                   padding: "12px 16px",
                   color: "#E2E8F0",
-                  fontSize: 14,
+                  fontSize: 16,
                   outline: "none",
                   fontFamily: "inherit",
                   marginBottom: 14,
@@ -1742,7 +1908,7 @@ export default function App() {
                 borderRadius: 10,
                 padding: "12px 16px",
                 color: "#E2E8F0",
-                fontSize: 14,
+                fontSize: 16,
                 outline: "none",
                 fontFamily: "inherit",
                 resize: "vertical",
@@ -1765,7 +1931,7 @@ export default function App() {
                 padding: "14px",
                 fontSize: 14,
                 fontWeight: 700,
-                cursor: "none",
+                cursor: cursorStyle,
                 fontFamily: "inherit",
                 boxShadow: "0 8px 24px rgba(108,99,255,0.35)",
               }}
@@ -1779,12 +1945,15 @@ export default function App() {
       {/* FOOTER */}
       <footer
         style={{
-          padding: "24px 48px",
+          padding: isMobile ? "20px" : "24px 48px",
           borderTop: "1px solid rgba(108,99,255,0.1)",
           display: "flex",
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? 10 : 0,
           justifyContent: "space-between",
           alignItems: "center",
           background: "rgba(5,8,22,0.5)",
+          textAlign: isMobile ? "center" : "left",
         }}
       >
         <span
