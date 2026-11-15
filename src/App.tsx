@@ -685,27 +685,50 @@ function ProjectModal({
             </div>
           ))}
         </div>
-        {project.github && (
-          <a
-            href={project.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 10,
-              background: `linear-gradient(135deg,${project.color},${project.color === "#6C63FF" ? "#00E5FF" : "#6C63FF"})`,
-              color: "#fff",
-              borderRadius: 10,
-              padding: "12px 24px",
-              fontSize: 14,
-              fontWeight: 600,
-              textDecoration: "none",
-            }}
-          >
-            🐱 View on GitHub
-          </a>
-        )}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+          {project.github && (
+            <a
+              href={project.github}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 10,
+                background: `linear-gradient(135deg,${project.color},${project.color === "#6C63FF" ? "#00E5FF" : "#6C63FF"})`,
+                color: "#fff",
+                borderRadius: 10,
+                padding: "12px 24px",
+                fontSize: 14,
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
+              🐱 View on GitHub
+            </a>
+          )}
+          {project.figma && (
+            <a
+              href={project.figma}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 10,
+                background: `linear-gradient(135deg,${project.color},${project.color === "#6C63FF" ? "#00E5FF" : "#6C63FF"})`,
+                color: "#fff",
+                borderRadius: 10,
+                padding: "12px 24px",
+                fontSize: 14,
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
+              🎨 View in Figma
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -1126,6 +1149,29 @@ export default function App() {
               >
                 Get In Touch
               </button>
+              <a
+                href={personalInfo.cv}
+                download="Tharaka_Bandara_Resume.pdf"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  background: "transparent",
+                  color: "#00E5FF",
+                  border: "1px solid rgba(0,229,255,0.4)",
+                  borderRadius: 12,
+                  padding: "14px 30px",
+                  fontSize: 14,
+                  fontWeight: 700,
+                  cursor: cursorStyle,
+                  fontFamily: "inherit",
+                  textDecoration: "none",
+                  flex: isMobile ? "1 1 140px" : "none",
+                }}
+              >
+                ⬇ Download CV
+              </a>
             </div>
             <div
               className="hero-stats"
@@ -1309,8 +1355,8 @@ export default function App() {
             {[
               {
                 icon: "🎓",
-                title: "BEng (Hons) Software Engineering",
-                sub: "ESOFT University, Colombo – 2026",
+                title: "BEng (Hons) Software Engineering – Top-up",
+                sub: "London Metropolitan University – ESOFT Metro Campus – 2026",
               },
               {
                 icon: "📜",
@@ -1803,6 +1849,18 @@ export default function App() {
                 "GitHub",
                 personalInfo.github,
                 `https://github.com/Chipzy98`,
+              ],
+              [
+                "💼",
+                "LinkedIn",
+                personalInfo.linkedin,
+                `https://www.linkedin.com/in/tharaka-vimukthi/`,
+              ],
+              [
+                "📄",
+                "Resume",
+                "Download CV (PDF)",
+                personalInfo.cv,
               ],
             ].map(([icon, label, val, href]) => (
               <div
