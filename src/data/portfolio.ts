@@ -10,7 +10,7 @@ export const personalInfo = {
   bio: "Passionate UI/UX Designer & Frontend Developer based in Colombo, Sri Lanka. Winner of Best Software Solution at Industry Minds Competition 2024.",
   stats: [
     { label: "Years Exp.", value: "3+" },
-    { label: "Projects", value: "10+" },
+    { label: "Projects", value: "20+" },
     { label: "Award Win", value: "1st" },
   ],
 };
